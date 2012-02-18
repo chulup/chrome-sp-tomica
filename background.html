@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+		<script type="text/javascript">
+			var pollInterval = 1000 * 60 /10;
+			var SP_CAL = 'http://sp.tomica.ru/forum/sp/mycalendar/mycalendar.php';
+			var count = 0;
+
+			function setBadgeText(text) {
+				chrome.browserAction.setBadgeText({text: text});
+			}
+
+			function updateLabel() {
+				var callback = function (data) {
+					count = $("#page-header b", $(data))[0].innerHTML;
+					setBadgeText(count);
+				};
+				$.get(SP_CAL, null, callback, null);
+			}
+
+			function startRequest() {
+				updateLabel();
+				window.setTimeout(startRequest, pollInterval);
+			}
+		</script>
+	</head>
+	<body onload="startRequest()">
+	</body>
+</html>
+

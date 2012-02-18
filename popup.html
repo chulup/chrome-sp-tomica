@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script type="text/javascript">
+			function writeText(text){
+				f = document.createElement('h3');
+				f.innerText = text;
+				document.body.appendChild(f);
+			}
+			function init(){
+				bg = chrome.extension.getBackgroundPage();
+				writeText("Число новых событий: " + bg.count);
+			}
+		</script>
+	</head>
+	<body onload="init()">
+	</body>
+</html>
