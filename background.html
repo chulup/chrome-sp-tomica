@@ -32,7 +32,6 @@
 			}
 
 			function updateLabel() {
-				console.log("вход");
 				$.get(SP_CAL,  
 						function (data) {
 							count = $("#page-header b", $(data))[0].innerHTML;
@@ -40,7 +39,7 @@
 						})
 					.error(
 							function(jqXHR, textStatus, httpError) {
-								console.log("error. status: " + textStatus + "; http: " + httpError);
+				//				console.log("error. status: " + textStatus + "; http: " + httpError);
 								if( httpError == "Forbidden" ) 
 									setNotLoggedIn();
 							});
@@ -90,4 +89,3 @@
 	<body onload="init()">
 	</body>
 </html>
-
