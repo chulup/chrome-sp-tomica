@@ -2,30 +2,98 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="constants.js"></script>
 		<script type="text/javascript">
-			var pollInterval = 1000 * 60 /10;
-			var SP_CAL = 'http://sp.tomica.ru/forum/sp/mycalendar/mycalendar.php';
 			var count = 0;
+			var loggedIn = true;
 
 			function setBadgeText(text) {
-				chrome.browserAction.setBadgeText({text: text});
+				if( text >= 1 ) {
+					chrome.browserAction.setBadgeText({text: text});
+				} else {
+					chrome.browserAction.setBadgeText({text: ""});
+				}
+			}
+
+			function checkLoggedIn(data) {
+				return ! $("#quick-login", $(data))[0] ;
+			}
+
+			function setNotLoggedIn() {
+				chrome.browserAction.setIcon({path: icon_logged_out});
+				loggedIn = false;
+				setBadgeText("");
+			}
+
+			function setLoggedIn() {
+				chrome.browserAction.setIcon({path: icon_logged_in});
+				loggedIn = true;
+				setBadgeText(count);
 			}
 
 			function updateLabel() {
 				var callback = function (data) {
-					count = $("#page-header b", $(data))[0].innerHTML;
-					setBadgeText(count);
+					if( !checkLoggedIn(data) ){
+						setNotLoggedIn();
+						return;
+					} else {
+						setLoggedIn();
+						count = $("#page-header b", $(data))[0].innerHTML;
+					}
+									};
+				$.get(SP_CAL,  
+						function(data, status)
+						{
+							console.log("cb: " + status);
+						})
+							.success(function(){console.log("success");})
+							.error(function(){console.log("error");});
+			}
+
+			function openPage(tab) {
+				tabsQuery = function(tabs) { // if there is at least on page on SP_CAL
+					if( tabs.length != 0 ) { // reload it and make active
+						chrome.tabs.update(tabs[0].id, 
+												 {
+													"active": true,
+													"url": SP_CAL
+												 }, 
+												 null);
+						return;
+					}
+			
+					chrome.tabs.create({"url":SP_CAL, "active":true}, null);
+	
 				};
-				$.get(SP_CAL, null, callback, null);
+
+				url = "";
+				if( loggedIn ) {
+					url = SP_CAL;
+				} else {
+					url = SP_BASE;
+				}
+				chrome.tabs.query(
+						{
+							"url": url,
+							"windowId": tab.windowId
+						},
+						tabsQuery);
 			}
 
 			function startRequest() {
+				console.log("start");
 				updateLabel();
+				console.log("start2");
 				window.setTimeout(startRequest, pollInterval);
+			}
+
+			function init() {
+				chrome.browserAction.onClicked.addListener(openPage);
+				startRequest()
 			}
 		</script>
 	</head>
-	<body onload="startRequest()">
+	<body onload="init()">
 	</body>
 </html>
 

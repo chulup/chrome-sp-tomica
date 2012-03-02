@@ -1,13 +1,13 @@
 {
 	"name": "sp.tomica.ru watcher",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Регулярно проверяет события на sp.tomica.ru",
 	"browser_action": {
-		"default_icon": "icon.gif",
-		"popup": "popup.html"
+		"default_icon": "logged_out.png"
 	},
 	"background_page": "background.html",
 	"permissions": [
-		"http://sp.tomica.ru/"
+		"http://sp.tomica.ru/",
+		"tabs"
 	]
 }
